@@ -4,6 +4,14 @@ Automation for unzipping files, sorting, finding files for download, backup and 
 
 The point is whenever I have something I want to automate I can come here to do it.
 
+## TODO
+
+1. Unzip files
+1. Find filetypes
+1. Check if serie or movie.
+1. Move to the appropiate folder.
+1. Get data from IMDbPY to check if movie/serie? 
+
 
 ## Installations
 
