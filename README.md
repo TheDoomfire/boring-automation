@@ -10,7 +10,8 @@ The point is whenever I have something I want to automate I can come here to do 
 1. Find filetypes
 1. Check if serie or movie.
 1. Move to the appropiate folder.
-1. Get data from IMDbPY to check if movie/serie? 
+1. Get data from IMDbPY to check if movie/serie?
+1. Check if a file has subtitles?
 
 
 ## Installations
