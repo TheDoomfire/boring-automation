@@ -5,3 +5,4 @@ EXTENSION_COMPRESSIONS = ['.zip', '.rar', '.7z', '.tar', '.gz', '.bz2', '.xz', '
 
 # Regular Expression
 RE_WEBSITE = "(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})"
+RE_VIDEO_PIXELS = "(480|720|1080|1440|2160|7680)" # 2K: (1440p) 4K: (2160p) 8K: (7680)

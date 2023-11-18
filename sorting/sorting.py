@@ -1,5 +1,5 @@
 import os
-from ..lib import variables
+import variables
 
 def sort_movies(folder_path):
     print("Sorting movies")

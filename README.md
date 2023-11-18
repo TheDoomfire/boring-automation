@@ -14,6 +14,15 @@ The point is whenever I have something I want to automate I can come here to do 
 1. Check if a file has subtitles?
 
 
+1. Extract movie name.
+1. Check if movie.
+1. Check if it has any subtitles files or in video.
+1. Move & rename folder
+1. Downloads the subtitle
+
+
+Try using MediaInfo OR ffmpeg (ffmpeg seems to be the best) to check if it has subtitles.
+
 ## Installations
 
 Create a venv `python -m venv .venv` //Name the folder whatever you want.
