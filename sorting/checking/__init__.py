@@ -1,1 +1,1 @@
-__all__ = ["series", "movies"] # The filenames inside the directory
+__all__ = ["media", "series", "movies"] # The filenames inside the directory
