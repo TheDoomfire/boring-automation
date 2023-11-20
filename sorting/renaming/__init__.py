@@ -1,1 +1,1 @@
-__all__ = ["movies"]
+__all__ = ["movies", "subtitles"]

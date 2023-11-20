@@ -14,6 +14,7 @@ def get_imdb_info(movie_name):
             return None
 
         # Check if there's an exact match
+        # TODO: Make so it ignore characters. for example: "Paw Patrol The Mighty Movie" = "Paw Patrol: The Mighty Movie"
         exact_match = False
         for movie in movies:
             if movie['title'].lower() == movie_name.lower():

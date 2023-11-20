@@ -46,7 +46,7 @@ def rename_subtitles(folder_path):
 
 
 def main():
-    folder_p = r"D:\Downloads\2 - Torrents\Outrageous Fortune 2005 Season 2 Complete + Extras  DVDRip x264 [i_c]"
+    folder_p = r"D:\Videos\Series\Outrageous Fortune\Season 3"
     rename_subtitles(folder_p)
 
 
