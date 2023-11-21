@@ -2,6 +2,12 @@
 EXTENSION_VIDEOS = ['.mp4', '.mkv', '.avi', '.mov', '.wmv', '.flv', '.webm', '.m4v', '.mpg', '.mpeg', '.3gp']
 EXTENSION_AUDIOS = ['.mp3', '.wav', '.ogg', '.aac', '.flac', '.m4a', '.wma', '.amr', '.mid', '.midi', '.ac3']
 EXTENSION_COMPRESSIONS = ['.zip', '.rar', '.7z', '.tar', '.gz', '.bz2', '.xz', '.tar.gz', '.tar.bz2', '.tar.xz']
+EXTENSION_SUBTITLES = [ # TODO: Add more here.
+    ".srt",
+    ".vtt",
+    ".sub",
+    ".ass",
+]
 
 
 # Regular Expression

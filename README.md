@@ -23,6 +23,10 @@ The point is whenever I have something I want to automate I can come here to do 
 
 Try using MediaInfo OR ffmpeg (ffmpeg seems to be the best) to check if it has subtitles.
 
+## Assets
+
+1. [Dump of subtitle data](https://dl.opensubtitles.org/addons/export/)
+
 ## Installations
 
 Create a venv `python -m venv .venv` //Name the folder whatever you want.

@@ -71,10 +71,10 @@ def format_file_name(file_name):
     match_year = pattern_year.search(file_name)
     match_pixel = pattern_pixel.search(file_name)
 
-    season = 0
-    episode = 0
-    year = 0
-    pixel = 0
+    season = None
+    episode = None
+    year = None
+    pixel = None
     media_type = None
 
     formatted_name = split_by_first_re_pattern(file_name, [variables.RE_SERIE, variables.RE_YEAR, variables.RE_VIDEO_PIXELS])[0]
@@ -106,7 +106,7 @@ def format_file_name(file_name):
     #print("PIXEL: ", match_pixel)
     #print(name_with_metadata)
     #print(formatted_name)
-    return formatted_name, name_with_metadata, media_type
+    return formatted_name, name_with_metadata, media_type, year
 
 
 def sorter(folder_path):
@@ -117,30 +117,66 @@ def sorter(folder_path):
             raise FileNotFoundError(f"The folder '{folder_path}' does not exist.")
         
         # Iterate through files in the folder
-        for filename in os.listdir(folder_path):
-            file_path = os.path.join(folder_path, filename)
+        for root, _, files in os.walk(folder_path):
+            for filename in files:
+                file_path = os.path.join(root, filename)
+        #for filename in os.listdir(folder_path):
+            #file_path = os.path.join(folder_path, filename)
             
-            # Check if the file is a regular file and has a video extension
-            if os.path.isfile(file_path) and any(file_path.lower().endswith(ext) for ext in variables.EXTENSION_VIDEOS):
-                video_files.append(file_path)
-                #print(filename)
-                formatted_filename, filename_with_metadata, media_type = format_file_name(filename)
-                #print(formatted_filename)
-                # From IMDB if I don't like the one from format_file_name()
-                #media_type_imdb = media.get_imdb_info(formatted_filename)
-                #print(media_type_imdb)
-                print(file_path)
-                extension = small_functions.get_file_extension(filename)
-                print(extension)
-                # TODO: Forgot file extention :(
-                # And where to move....
-                if media_type == "asdasd": # should be movie.
-                    print("Creating folder.")
-                    new_file_path = os.path.join(folder_path, filename_with_metadata)
-                    print("old: ", file_path)
-                    print("new: ", new_file_path)
-                    small_functions.create_folder(new_file_path)
-                    #shutil.move(file_path, new_file_path) # Current to old.
+                # Check if the file is a regular file and has a video extension
+                if os.path.isfile(file_path) and any(file_path.lower().endswith(ext) for ext in variables.EXTENSION_VIDEOS):
+                    video_files.append(file_path)
+                    video_file_extension, video_file_name_without_extension = small_functions.get_file_extension(filename)
+                    #print(filename)
+                    formatted_filename, filename_with_metadata, media_type, media_year = format_file_name(filename)
+                    #print(formatted_filename)
+                    # From IMDB if I don't like the one from format_file_name()
+                    #media_type_imdb = media.get_imdb_info(formatted_filename)
+                    #print(media_type_imdb)
+                    #extension = small_functions.get_file_extension(filename)
+                    if media_type == "movie": # should be movie.
+                        movie_path = small_functions.get_file_path(file_path)
+                        new_file_path = os.path.join(variables.PATH_MOVIES, filename_with_metadata)
+                        new_file_path_with_file = os.path.join(new_file_path, filename)
+                        small_functions.create_folder(new_file_path)
+                        print("---------- Creating folder ----------")
+                        if movie_path == folder_path:
+                            print("No subfolder: ", movie_path)
+                            print(file_path)
+                            print(new_file_path_with_file)
+                            shutil.move(file_path, new_file_path_with_file)
+                        else:
+                            print("SUBFOLDER")
+                            print(movie_path)
+                            print(new_file_path)
+                            #print(small_functions.file_has_subtitles(file_path)) # DONT WORK!
+                            for root, _, files in os.walk(movie_path):
+                                has_subtitle = None
+                                print("---------- LOOKING FOR FILES ----------")
+                                for file in files:
+                                    print("FILE: ", file)
+                                    the_file_path = os.path.join(movie_path, file)
+                                    if any(file.lower().endswith(ext) for ext in variables.EXTENSION_SUBTITLES):
+                                        subtitle_extension = small_functions.get_file_extension(file)[0]
+                                        print("SUBTITLE! ", file)
+                                        print("EXT: ", subtitle_extension)
+                                        new_subtitle_file_name = video_file_name_without_extension + subtitle_extension
+                                        print("NEW SUBTITLE NAME: ", new_subtitle_file_name)
+                                        new_subtitle_file_path = os.path.join(new_file_path, new_subtitle_file_name)
+                                        shutil.move(the_file_path, new_subtitle_file_path)
+                                        has_subtitle = True
+                                    else:
+                                        print("not sub")
+                                        shutil.move(the_file_path, new_file_path)
+                                    print(the_file_path)
+                            if has_subtitle == None:
+                                print("Folder HAD NO SUBTITLES :(")
+
+                            small_functions.delete_empty_folders(movie_path)
+
+                            # TODO:
+                            # Need to move the files instead or 
+                            #shutil.move(movie_path, new_file_path) # Moves the folder into the new folder. Waste of folders.
 
 
                 #print("Name: ", split_by_first_re_pattern(filename, [variables.RE_SERIE, variables.RE_YEAR, variables.RE_VIDEO_PIXELS])[0])
