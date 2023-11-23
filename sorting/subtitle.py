@@ -1,6 +1,7 @@
 import os
 from lib import small_functions
-from sorting import format_file_name
+#from sorting import format_file_name
+import sorting
 
 
 # TODO: It's very slow... Need to find out why.
@@ -13,15 +14,12 @@ def subtitle_finder(file_name):
     # And it takes the year and movie name.
     # If year doesn't exist it looks in IMDB for it.
     # get_file_extension()
-    file_name_formating = format_file_name(file_name)
+    file_name_formating = sorting.format_file_name(file_name)
     movie_file_name = file_name_formating[0].lower()
     movie_file_year = file_name_formating[3]
     file_name_release_group = file_name_formating[4]
     #file_name_release_group = small_functions.split_by_this_and_remove_single_chars(file_name_release_group, ".")
     file_name_release_group = small_functions.split_by_these_and_remove_single_chars(file_name_release_group, [".", " "])
-    print("----- file_name_release_group ------")
-    print(file_name_release_group)
-
 
     exact_name_match = None
     with open(subtitle_file, 'r', encoding='utf-8') as file:
@@ -34,17 +32,23 @@ def subtitle_finder(file_name):
                 # Split the line using tab as a delimiter
                 data = line.strip().split('\t')
                 # Check if the line has enough elements
+                print(len(data))
                 if len(data) > 3:
                     # Extract the MovieName and LanguageName from the line
                     current_movie_name = small_functions.remove_special_characters(data[1].lower())
                     id = data[0]
                     movie_year = data[2].lower()    
                     language_name = data[3].lower()
+                    #series_season = data[11] #list index out of range
+                    #print(series_season)
+                    #series_episode = data[12]
                     # Check if the specified movie_name is present in the current line
                     # (exact match, lowercase)
                     # and if the language is English
 
-                    # TODO: REMOVE CHARACTERS FROM MOVIE NAME. Like "The movie: The Movie - The Movie"
+                    # ImdbID data[5], check it if it's a serie?
+
+
                     if movie_file_name == current_movie_name and language_name == 'english' and movie_file_year == movie_year:
                         #print("---------------------------")
                         #print(file_name)
@@ -68,7 +72,12 @@ def subtitle_finder(file_name):
 
                         result.append(line.strip())
     print(count)
-    best_download_url = "https://www.opensubtitles.org/subtitleserve/sub/" + str(best_id)
+
+    if best_id:
+        best_download_url = "https://www.opensubtitles.org/subtitleserve/sub/" + str(best_id)
+    else:
+        best_download_url = None
+        
     # result, exact_name_match, best_match, best_id, best_download_url
     return { 'download_url': best_download_url, 'exact_name': exact_name_match }
 
@@ -89,9 +98,6 @@ def find_and_download_subtitle(file_name, download_path):
     archived_file_path = os.path.join(download_path, archived_file)
     small_functions.unzip_file(archived_file_path, download_path)
 
-    # looks for a .srt file? rename it?
-
-
 
 
 def main():
@@ -101,18 +107,10 @@ def main():
     #verify_subtitle_hash(movie_file, subtitle_url)
     #movie_name = "Friday The 13Th"
     #movie_name = "Friday.the.13th.2009.1080p.BluRay.x264.YIFY"
-    movie_name = "A.Nightmare.on.Elm.Street.2010.1080p.BrRip.x264.BOKUTOX.YIFY.mkv-muxed"
-    #movie_name = "Blue Mountain State The Rise Of Thadland 2016 720p BluRay HEVC x265 BONE"
-    #print(subtitle_finder(movie_name))
-    #download_url = subtitle_finder(movie_name)['download_url']
-    #print(download_url)
-    download_to_here = r"D:\Documents\GitHub\boring-automation\sorting\data"
-    #small_functions.download_file(download_url, download_to_here)
-    archived_files = small_functions.find_archive_files(download_to_here)
-    archived_file_path = os.path.join(download_to_here, archived_files[0])
-    print(archived_file_path)
+    #serie_name = "loki.s02e05.1080p.web.h264-lazycunts"
+    serie_name = "Outrageous Fortune S01E01 Slings and Arrows"
+    print(subtitle_finder(serie_name))
 
-    small_functions.unzip_file(archived_file_path, download_to_here)
 
 
 if __name__ == '__main__':

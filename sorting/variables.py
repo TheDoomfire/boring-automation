@@ -12,7 +12,10 @@ EXTENSION_SUBTITLES = [ # TODO: Add more here.
 # Lists
 #LIST_UPLOADERS = ["yifi", "GalaxyRG"]
 LIST_ALL_SPECIAL_CHARACTERS = ['.', ',', '!', ':', ';', '"', "'", '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=', '<', '>', '/', '?', '[', ']', '{', '}', '|', '\\']
-
+LIST_VIP_ACTORS = [
+    'will forte',
+    'ben affleck'
+]
 
 # Regular Expression
 #RE_WEBSITE = "(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})"

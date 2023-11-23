@@ -73,6 +73,12 @@ def two_digits(n):
   return "%02d" % n
 
 
+def remove_leading_zeros(input_str):
+    # Use the int() function to convert the input string to an integer,
+    # and then convert it back to a string to remove leading zeros
+    result_str = str(int(input_str))
+    return result_str
+
 
 # TODO: Create a function called "format_name"
 # that returns a formatted name and file/folder name?
@@ -107,11 +113,7 @@ def format_file_name(file_name):
     # .BluRay.DD5.1.x264-GalaxyRG[TGx]
     # .WEBRip.1600MB.DD5.1.x264-GalaxyRG[TGx]
     # .1080p.AMZN.WEBRip.1400MB.DD5.1.x264-GalaxyRG
-    splitted = small_functions.split_by_this( file_name_release_group, ".")
-
-    print(file_name)
-    print(file_name_release_group)
-    print(splitted)
+    #splitted = small_functions.split_by_this( file_name_release_group, ".")
 
     if match_serie:
         media_type = "tv show"
@@ -138,7 +140,7 @@ def format_file_name(file_name):
     #print("PIXEL: ", match_pixel)
     #print(name_with_metadata)
     #print(formatted_name)
-    return formatted_name, name_with_metadata, media_type, year, file_name_release_group
+    return formatted_name, name_with_metadata, media_type, year, file_name_release_group, season
 
 
 
@@ -167,6 +169,8 @@ def sorter(folder_path):
                     filename_with_metadata = the_formatted_file_name[1]
                     media_type = the_formatted_file_name[2]
                     media_year = the_formatted_file_name[3]
+                    season = the_formatted_file_name[5]
+                    has_subtitle = None
                     #print(formatted_filename)
                     # From IMDB if I don't like the one from format_file_name()
                     #media_type_imdb = media.get_imdb_info(formatted_filename)
@@ -176,8 +180,8 @@ def sorter(folder_path):
                         movie_path = small_functions.get_file_path(file_path)
                         new_file_path = os.path.join(variables.PATH_MOVIES, filename_with_metadata)
                         new_file_path_with_file = os.path.join(new_file_path, filename)
-                        small_functions.create_folder(new_file_path)
                         print("---------- Creating folder ----------")
+                        small_functions.create_folder(new_file_path)
                         if movie_path == folder_path:
                             print("No subfolder: ", movie_path)
                             print(file_path)
@@ -189,7 +193,6 @@ def sorter(folder_path):
                             print(new_file_path)
                             #print(small_functions.file_has_subtitles(file_path)) # DONT WORK!
                             for root, _, files in os.walk(movie_path):
-                                has_subtitle = None
                                 print("---------- LOOKING FOR FILES ----------")
                                 for file in files:
                                     print("FILE: ", file)
@@ -203,26 +206,61 @@ def sorter(folder_path):
                                     else:
                                         shutil.move(the_file_path, new_file_path)
                                     print(the_file_path)
-                            if has_subtitle == None:
-                                print("Folder HAD NO SUBTITLES :(")
-                                subtitle.find_and_download_subtitle(filename, new_file_path)
-                                # TODO: Need to renname the subtitle file.
-                                if 1 == 2: # as a comment lol
-                                    new_subtitles = small_functions.find_subtitle_files(new_file_path)
-                                    new_subtitle = new_subtitles[0]
-                                    subtitle_extension = small_functions.get_file_extension(new_subtitle)[0]
-                                    new_subtitle_file_name = video_file_name_without_extension + subtitle_extension
-                                    new_subtitle_file_path = os.path.join(new_file_path, new_subtitle_file_name)
-                                    shutil.move(new_file_path, new_subtitle_file_path)
-                                    has_subtitle = True
+                        if has_subtitle == None:
+                            print("Folder HAD NO SUBTITLES :(")
+                            subtitle.find_and_download_subtitle(filename, new_file_path)
+                            # TODO: Need to renname the subtitle file.
+                            new_subtitles = small_functions.find_subtitle_files(new_file_path)
+                            new_subtitle = new_subtitles[0]
 
-                                print("Now it has a subtitle file!!")
+                            subtitle_extension = small_functions.get_file_extension(new_subtitle)[0]
+                            new_subtitle_file_name = video_file_name_without_extension + subtitle_extension
+                            
+                            old_subtitle_path = os.path.join(new_file_path, new_subtitle)
+                            new_subtitle_file_path = os.path.join(new_file_path, new_subtitle_file_name)
+                            print("-------------------------------")
+                            print("OLD SUB: ", old_subtitle_path)
+                            print("NEW SUB: ", new_subtitle_file_path)
+                            print("-------------------------------")
+
+                            shutil.move(old_subtitle_path, new_subtitle_file_path)
+                            has_subtitle = True
+
+                            print("Now it has a subtitle file!!")
 
                             small_functions.delete_empty_folders(movie_path)
+                    elif media_type == "tv show":
+                        serie_path = small_functions.get_file_path(file_path)
+                        serie_season_folder = "Season " + remove_leading_zeros(season)
+                        serie_season_folder_path = os.path.join(variables.PATH_SERIES, formatted_filename, serie_season_folder)
+                        new_serie_path_with_file = os.path.join(serie_season_folder_path, filename)
 
-                            # TODO:
-                            # Need to move the files instead or 
-                            #shutil.move(movie_path, new_file_path) # Moves the folder into the new folder. Waste of folders.
+                        small_functions.create_folder(serie_season_folder_path)
+                        if serie_path == folder_path:
+                            print("No subfolder")
+                            print(file_path)
+                            print(new_serie_path_with_file)
+                            shutil.move(file_path, new_serie_path_with_file)
+                            # TODO: Check if has subtitle
+                            # Get subtitle
+                            # Rename subtitle
+                            #if has_subtitle == None:
+                                #subtitle.find_and_download_subtitle(filename, serie_season_folder_path)
+                        else:
+                            print("")
+                            print("------ Subfolder -----")
+                            for root, _, files in os.walk(serie_path):
+                                for file in files:
+                                    old_path = os.path.join(serie_path, file)
+                                    new_path = os.path.join(serie_season_folder_path, file)
+                                    print(filename)
+                                    print(old_path)
+                                    print(new_path)
+                                    # TODO: Some files get deleted???
+                                    shutil.move(old_path, new_path)
+                                    # TODO: If subtile found
+
+                        small_functions.delete_empty_folders(serie_path)
 
 
                 #print("Name: ", split_by_first_re_pattern(filename, [variables.RE_SERIE, variables.RE_YEAR, variables.RE_VIDEO_PIXELS])[0])
