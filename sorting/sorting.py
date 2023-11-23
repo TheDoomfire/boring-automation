@@ -4,15 +4,31 @@ import shutil
 
 # Custom Imports
 import variables # On main app gets the error "no module named 'variables'"
+import subtitle
 from checking import media
 from lib import small_functions
 
 
+# TODO: Make one for LAST re pattern. To find possibly uploaders
 def split_by_first_re_pattern(input_string, patterns):
     for pattern in patterns:
         match = re.search(pattern, input_string)
         if match:
             return re.split(pattern, input_string, maxsplit=1)
+    # If no pattern is found, return the original string
+    return [input_string]
+
+
+def split_by_last_re_pattern(input_string, patterns):
+    last_match = None
+    for pattern in patterns:
+        match = re.search(pattern, input_string)
+        if match:
+            last_match = match
+
+    if last_match:
+        return re.split(last_match.re.pattern, input_string, maxsplit=1)
+
     # If no pattern is found, return the original string
     return [input_string]
 
@@ -56,6 +72,8 @@ def clean_text(input_text):
 def two_digits(n):
   return "%02d" % n
 
+
+
 # TODO: Create a function called "format_name"
 # that returns a formatted name and file/folder name?
 # and movie name or serie name.
@@ -78,8 +96,22 @@ def format_file_name(file_name):
     media_type = None
 
     formatted_name = split_by_first_re_pattern(file_name, [variables.RE_SERIE, variables.RE_YEAR, variables.RE_VIDEO_PIXELS])[0]
+    file_name_release_group = split_by_last_re_pattern(file_name, [variables.RE_SERIE, variables.RE_YEAR, variables.RE_VIDEO_PIXELS])[-1]
     formatted_name = clean_text(formatted_name)
     name_with_metadata = formatted_name
+
+    # To try and get the name
+    # .BrRip.x264.YIFY
+    # .HULU.WEBRip.800MB.x264-GalaxyRG
+    # .NF.WEBRip.800MB.x264-GalaxyRG
+    # .BluRay.DD5.1.x264-GalaxyRG[TGx]
+    # .WEBRip.1600MB.DD5.1.x264-GalaxyRG[TGx]
+    # .1080p.AMZN.WEBRip.1400MB.DD5.1.x264-GalaxyRG
+    splitted = small_functions.split_by_this( file_name_release_group, ".")
+
+    print(file_name)
+    print(file_name_release_group)
+    print(splitted)
 
     if match_serie:
         media_type = "tv show"
@@ -106,7 +138,8 @@ def format_file_name(file_name):
     #print("PIXEL: ", match_pixel)
     #print(name_with_metadata)
     #print(formatted_name)
-    return formatted_name, name_with_metadata, media_type, year
+    return formatted_name, name_with_metadata, media_type, year, file_name_release_group
+
 
 
 def sorter(folder_path):
@@ -128,7 +161,12 @@ def sorter(folder_path):
                     video_files.append(file_path)
                     video_file_extension, video_file_name_without_extension = small_functions.get_file_extension(filename)
                     #print(filename)
-                    formatted_filename, filename_with_metadata, media_type, media_year = format_file_name(filename)
+                    #formatted_filename, filename_with_metadata, media_type, media_year = format_file_name(filename)
+                    the_formatted_file_name = format_file_name(filename)
+                    formatted_filename = the_formatted_file_name[0]
+                    filename_with_metadata = the_formatted_file_name[1]
+                    media_type = the_formatted_file_name[2]
+                    media_year = the_formatted_file_name[3]
                     #print(formatted_filename)
                     # From IMDB if I don't like the one from format_file_name()
                     #media_type_imdb = media.get_imdb_info(formatted_filename)
@@ -158,19 +196,27 @@ def sorter(folder_path):
                                     the_file_path = os.path.join(movie_path, file)
                                     if any(file.lower().endswith(ext) for ext in variables.EXTENSION_SUBTITLES):
                                         subtitle_extension = small_functions.get_file_extension(file)[0]
-                                        print("SUBTITLE! ", file)
-                                        print("EXT: ", subtitle_extension)
                                         new_subtitle_file_name = video_file_name_without_extension + subtitle_extension
-                                        print("NEW SUBTITLE NAME: ", new_subtitle_file_name)
                                         new_subtitle_file_path = os.path.join(new_file_path, new_subtitle_file_name)
                                         shutil.move(the_file_path, new_subtitle_file_path)
                                         has_subtitle = True
                                     else:
-                                        print("not sub")
                                         shutil.move(the_file_path, new_file_path)
                                     print(the_file_path)
                             if has_subtitle == None:
                                 print("Folder HAD NO SUBTITLES :(")
+                                subtitle.find_and_download_subtitle(filename, new_file_path)
+                                # TODO: Need to renname the subtitle file.
+                                if 1 == 2: # as a comment lol
+                                    new_subtitles = small_functions.find_subtitle_files(new_file_path)
+                                    new_subtitle = new_subtitles[0]
+                                    subtitle_extension = small_functions.get_file_extension(new_subtitle)[0]
+                                    new_subtitle_file_name = video_file_name_without_extension + subtitle_extension
+                                    new_subtitle_file_path = os.path.join(new_file_path, new_subtitle_file_name)
+                                    shutil.move(new_file_path, new_subtitle_file_path)
+                                    has_subtitle = True
+
+                                print("Now it has a subtitle file!!")
 
                             small_functions.delete_empty_folders(movie_path)
 
@@ -193,12 +239,17 @@ def sorter(folder_path):
 def main():
     sorter(r"D:\Downloads\2 - Torrents")
     #small_functions.create_folder(r"D:\Desktop Two\test_folder_lol")
-"""     if isinstance(movies, list):
-        print("Movie files found:")
-        for movie in movies:
-            print(movie)
-    else:
-        print("Error:", movies) """
+"""     test_list = ["Rumble.Through.the.Dark.2023.1080p.AMZN.WEBRip.1400MB.DD5.1.x264-GalaxyRG",
+                 "She.Came.to.Me.2023.720p.AMZN.WEBRip.800MB.x264-GalaxyRG[TGx]",
+                 "Sisu.2023.1080p.AMZN.WEBRip.1400MB.DD5.1.x264-GalaxyRG[TGx]",
+                 "SOUTH.PARK.JOINING.THE.PANDERVERSE.2023.1080p.WEB.H264-HUZZAH[TGx]",
+                 "The.Burial.2023.1080p.WEBRip.1400MB.DD5.1.x264-GalaxyRG[TGx]",
+                 "Zombie.Town.2023.720p.WEBRip.800MB.x264-GalaxyRG",
+                 "Friday.the.13th.2009.1080p.BluRay.x264.YIFY",
+                 "A.Nightmare.on.Elm.Street.2010.1080p.BrRip.x264.BOKUTOX.YIFY.mkv-muxed"
+                 ]
+    for item in test_list:
+        format_file_name(item) """
 
 
 if __name__ == '__main__':
