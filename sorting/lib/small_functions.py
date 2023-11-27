@@ -136,6 +136,12 @@ def find_subtitle_files(directory):
     return subtitle_files
 
 
+def list_folders(directory):
+    folders = [f for f in os.listdir(directory) if os.path.isdir(os.path.join(directory, f))]
+    return folders
+
+
+
 """ def file_has_subtitles(filename):
     media_info = mediainfo.MediaInfo()
     media_info.open(filename)

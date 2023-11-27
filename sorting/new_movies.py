@@ -1,8 +1,13 @@
 import os
+import sys
 
-from ..sorting import variables
+import variables
+from lib import small_functions
+
+# Import from sorting...
 
 # Check all movies I currently have.
+# Save it somewhere. Like a database or whatever.
 # From both Movies and Torrent folder.
 # Check all movies in here:
 # https://www.1377x.to/popular-movies
@@ -14,16 +19,13 @@ from ..sorting import variables
 # Check if vip_actors is in
 
 
-def list_folders(directory):
-    folders = [f for f in os.listdir(directory) if os.path.isdir(os.path.join(directory, f))]
-    return folders
 
 
 def main():
-    folders = list_folders(r"D:\Videos\Movies")
+    folders = small_functions.list_folders(r"D:\Videos\Movies")
     for folder in folders:
         print(folder)
-    print(variables.LIST_VIP_ACTORS)
+    print(variables.LIST_VIP_ACTORS) #variables.
 
 
 if __name__ == '__main__':

@@ -276,6 +276,7 @@ def sorter(folder_path):
 
 def main():
     sorter(r"D:\Downloads\2 - Torrents")
+    # Spammed 16 forever???
     #small_functions.create_folder(r"D:\Desktop Two\test_folder_lol")
 """     test_list = ["Rumble.Through.the.Dark.2023.1080p.AMZN.WEBRip.1400MB.DD5.1.x264-GalaxyRG",
                  "She.Came.to.Me.2023.720p.AMZN.WEBRip.800MB.x264-GalaxyRG[TGx]",

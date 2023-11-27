@@ -46,7 +46,7 @@ def rename_subtitles(folder_path):
 
 
 def main():
-    folder_p = r"D:\Videos\Series\Outrageous Fortune\Season 3"
+    folder_p = r"D:\Videos\Series\Outrageous Fortune\Season 4"
     rename_subtitles(folder_p)
 
 
