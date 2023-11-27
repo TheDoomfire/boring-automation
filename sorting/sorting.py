@@ -208,6 +208,7 @@ def sorter(folder_path):
                                     print(the_file_path)
                         if has_subtitle == None:
                             print("Folder HAD NO SUBTITLES :(")
+                            # TODO: Spamming printing 16... donno what problem is.
                             subtitle.find_and_download_subtitle(filename, new_file_path)
                             # TODO: Need to renname the subtitle file.
                             new_subtitles = small_functions.find_subtitle_files(new_file_path)
