@@ -32,7 +32,7 @@ def subtitle_finder(file_name):
                 # Split the line using tab as a delimiter
                 data = line.strip().split('\t')
                 # Check if the line has enough elements
-                print(len(data))
+                #print(len(data))
                 if len(data) > 3:
                     # Extract the MovieName and LanguageName from the line
                     current_movie_name = small_functions.remove_special_characters(data[1].lower())
@@ -71,7 +71,6 @@ def subtitle_finder(file_name):
                             best_id = id
 
                         result.append(line.strip())
-    print(count)
 
     if best_id:
         best_download_url = "https://www.opensubtitles.org/subtitleserve/sub/" + str(best_id)
@@ -79,14 +78,22 @@ def subtitle_finder(file_name):
         best_download_url = None
         
     # result, exact_name_match, best_match, best_id, best_download_url
-    return { 'download_url': best_download_url, 'exact_name': exact_name_match }
+    return { 'download_url': best_download_url, 'exact_name': exact_name_match, 'best_match': best_match, 'result': result }
 
 
 def find_and_download_subtitle(file_name, download_path):
     # TODO: Downloads new file if movie_name not found?
+    # https://dl.opensubtitles.org/addons/export/subtitles_all.txt.gz
+    # or if subtitle_finder() returns nothing?
 
     # Looks for the subtitles
     found_subtitles = subtitle_finder(file_name)
+    result = found_subtitles['result']
+    if not result:
+        print("Not found")
+    else:
+        print("Found!")
+
     download_url = found_subtitles['download_url']
 
     # Downloads it
@@ -99,6 +106,10 @@ def find_and_download_subtitle(file_name, download_path):
     small_functions.unzip_file(archived_file_path, download_path)
 
 
+def mass_download_opensub_data():
+    print("hey")
+
+
 
 def main():
     #subtitle_file = r'D:\Documents\GitHub\boring-automation\sorting\data\subtitles_all.txt'
@@ -107,10 +118,21 @@ def main():
     #verify_subtitle_hash(movie_file, subtitle_url)
     #movie_name = "Friday The 13Th"
     #movie_name = "Friday.the.13th.2009.1080p.BluRay.x264.YIFY"
-    #serie_name = "loki.s02e05.1080p.web.h264-lazycunts"
-    serie_name = "Outrageous Fortune S01E01 Slings and Arrows"
-    print(subtitle_finder(serie_name))
+    #test_movie_name = "loki.s02e05.1080p.web.h264-lazycunts"
+    download_path = r"D:\Desktop Two\test"
+    #test_movie_name = "Ricky.Gervais.Armageddon.2023.1080p.WEB.h264-ETHEL[TGx]" # Dosen't exist in file
+    test_movie_name = "Batman Begins (2005) 1080p BluRay x264 - 1.6GB - YIFY" # Does exist in file
+    test_var = subtitle_finder(test_movie_name)
+    result = test_var['result']
+    print("--- TEST_VAR ---")
+    print(test_var['result'])
+    if not result:
+        print("Not found.")
+    else:
+        print("Movie found!")
 
+    #print(subtitle_finder(test_movie_name))
+    # find_and_download_subtitle()
 
 
 if __name__ == '__main__':

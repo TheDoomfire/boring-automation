@@ -80,6 +80,7 @@ def remove_special_characters(input_string):
     return cleaned_string
 
 
+# TODO: Fix a downloading bar? So you can see when itds done downloading etc.
 def download_file(url, save_dir):
     # Create the save directory if it doesn't exist
     if not os.path.exists(save_dir):

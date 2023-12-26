@@ -4,6 +4,11 @@ Automation for unzipping files, sorting, finding files for download, backup and 
 
 The point is whenever I have something I want to automate I can come here to do it.
 
+## Known Issues
+
+1. Sorting: can't move files that already exist in the new folder.
+
+
 ## TODO
 
 1. Unzip files
@@ -26,6 +31,7 @@ Try using MediaInfo OR ffmpeg (ffmpeg seems to be the best) to check if it has s
 ## Assets
 
 1. [Dump of subtitle data](https://dl.opensubtitles.org/addons/export/)
+1. [Download Dump of subtitle data](https://dl.opensubtitles.org/addons/export/subtitles_all.txt.gz)
 
 ## Installations
 

@@ -177,6 +177,7 @@ def sorter(folder_path):
                     #print(media_type_imdb)
                     #extension = small_functions.get_file_extension(filename)
                     if media_type == "movie": # should be movie.
+                        print("Is movie.")
                         movie_path = small_functions.get_file_path(file_path)
                         new_file_path = os.path.join(variables.PATH_MOVIES, filename_with_metadata)
                         new_file_path_with_file = os.path.join(new_file_path, filename)
@@ -195,21 +196,39 @@ def sorter(folder_path):
                             for root, _, files in os.walk(movie_path):
                                 print("---------- LOOKING FOR FILES ----------")
                                 for file in files:
-                                    print("FILE: ", file)
+                                    print("FILE: ", file) 
                                     the_file_path = os.path.join(movie_path, file)
+                                    #print(file.lower().endswith(".mp4"))
+                                    # TODO: if files exist in new folder, then delete it.
+
                                     if any(file.lower().endswith(ext) for ext in variables.EXTENSION_SUBTITLES):
+                                        print("FOUND SUBTITLE")
                                         subtitle_extension = small_functions.get_file_extension(file)[0]
                                         new_subtitle_file_name = video_file_name_without_extension + subtitle_extension
                                         new_subtitle_file_path = os.path.join(new_file_path, new_subtitle_file_name)
                                         shutil.move(the_file_path, new_subtitle_file_path)
                                         has_subtitle = True
                                     else:
-                                        shutil.move(the_file_path, new_file_path)
+                                        print("NOT FOUND SUBTITLE")
+                                        # TODO:
+                                        # If already exists that file
+                                        # Then delete it.
+                                        # Check if the file exists at the new location
+                                        if os.path.exists(new_file_path_with_file):
+                                            print("EXISTS", new_file_path)
+                                            # If it exists, delete it
+                                            #os.remove(the_file_path)
+                                            print("DELETE THIS?: ", new_file_path_with_file)
+                                            print("file_path: ", file_path)
+                                        else:
+                                            shutil.move(the_file_path, new_file_path)
                                     print(the_file_path)
                         if has_subtitle == None:
                             print("Folder HAD NO SUBTITLES :(")
+                            print("Find and downloading subtitles")
                             # TODO: Spamming printing 16... donno what problem is.
                             subtitle.find_and_download_subtitle(filename, new_file_path)
+                            print("Downloaded subtitles")
                             # TODO: Need to renname the subtitle file.
                             new_subtitles = small_functions.find_subtitle_files(new_file_path)
                             new_subtitle = new_subtitles[0]
@@ -257,7 +276,7 @@ def sorter(folder_path):
                                     print(filename)
                                     print(old_path)
                                     print(new_path)
-                                    # TODO: Some files get deleted???
+                                    # TODO: If new_path already exists
                                     shutil.move(old_path, new_path)
                                     # TODO: If subtile found
 
@@ -267,7 +286,8 @@ def sorter(folder_path):
                 #print("Name: ", split_by_first_re_pattern(filename, [variables.RE_SERIE, variables.RE_YEAR, variables.RE_VIDEO_PIXELS])[0])
                 #print("Video: ", contains_regex(filename, variables.RE_YEAR))
                 #print("Serie: ", contains_regex(filename, variables.RE_SERIE)) # checks for 'S01E02' format
-                # TODO: Check if movie, serie or else? Preferable by re first then format name
+                # TODO: Ignore temp folder?
+                # Stop seeding torrent?
 
         #print(video_files)
 
