@@ -2,6 +2,7 @@ import os
 from lib import small_functions
 #from sorting import format_file_name
 import sorting
+import variables
 
 
 # TODO: It's very slow... Need to find out why.
@@ -78,6 +79,7 @@ def subtitle_finder(file_name):
         best_download_url = None
         
     # result, exact_name_match, best_match, best_id, best_download_url
+    print(result)
     return { 'download_url': best_download_url, 'exact_name': exact_name_match, 'best_match': best_match, 'result': result }
 
 
@@ -89,25 +91,40 @@ def find_and_download_subtitle(file_name, download_path):
     # Looks for the subtitles
     found_subtitles = subtitle_finder(file_name)
     result = found_subtitles['result']
+
+    # Checks if it found any result
     if not result:
         print("Not found")
+        mass_download_opensubtitles_data(variables.PATH_ALL_SUBTITLES)
+        # subtitles_all.txt.gz
+        found_subtitles = subtitle_finder(file_name)
     else:
         print("Found!")
 
     download_url = found_subtitles['download_url']
+    print("Download URL: ", download_url)
 
     # Downloads it
-    small_functions.download_file(download_url, download_path)
+    #small_functions.download_file(download_url, download_path)
 
     # Finds the file
-    archived_files = small_functions.find_archive_files(download_path)
+"""     archived_files = small_functions.find_archive_files(download_path)
     archived_file = archived_files[0]
     archived_file_path = os.path.join(download_path, archived_file)
-    small_functions.unzip_file(archived_file_path, download_path)
+    small_functions.unzip_file(archived_file_path, download_path) """
 
 
-def mass_download_opensub_data():
+
+def mass_download_opensubtitles_data(download_path):
+    all_subtitles_download = "https://dl.opensubtitles.org/addons/export/subtitles_all.txt.gz"
     print("hey")
+    # Downloads it
+    small_functions.download_file_and_replace(all_subtitles_download, download_path)
+    
+    #txt_file_path = os.path.join(variables.PATH_ALL_SUBTITLES, variables.NAME_ALL_SUBTITLES)
+    zip_file_path = os.path.join(variables.PATH_ALL_SUBTITLES, variables.NAME_ALL_SUBTITLE_ZIP)
+    print(zip_file_path)
+    small_functions.unzip_file(zip_file_path, download_path)
 
 
 
@@ -120,19 +137,12 @@ def main():
     #movie_name = "Friday.the.13th.2009.1080p.BluRay.x264.YIFY"
     #test_movie_name = "loki.s02e05.1080p.web.h264-lazycunts"
     download_path = r"D:\Desktop Two\test"
-    #test_movie_name = "Ricky.Gervais.Armageddon.2023.1080p.WEB.h264-ETHEL[TGx]" # Dosen't exist in file
-    test_movie_name = "Batman Begins (2005) 1080p BluRay x264 - 1.6GB - YIFY" # Does exist in file
-    test_var = subtitle_finder(test_movie_name)
-    result = test_var['result']
-    print("--- TEST_VAR ---")
-    print(test_var['result'])
-    if not result:
-        print("Not found.")
-    else:
-        print("Movie found!")
+    test_movie_name = "Ricky.Gervais.Armageddon.2023.1080p.WEB.h264-ETHEL[TGx]" # Dosen't exist in file
+    #test_movie_name = "Batman Begins (2005) 1080p BluRay x264 - 1.6GB - YIFY" # Does exist in file
 
-    #print(subtitle_finder(test_movie_name))
-    # find_and_download_subtitle()
+    #find_and_download_subtitle(test_movie_name, "nada")'
+    # TODO: Need to unzip the file and replace the existing one.
+    mass_download_opensubtitles_data(variables.PATH_ALL_SUBTITLES)
 
 
 if __name__ == '__main__':

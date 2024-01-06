@@ -2,6 +2,7 @@ import re
 import os
 import requests
 import zipfile
+import gzip
 #import mediainfo
 
 import variables
@@ -107,14 +108,47 @@ def download_file(url, save_dir):
     else:
         print("Error downloading file:", response.status_code)
         return None
+    
+
+def download_file_and_replace(url, save_dir):
+    # Create the save directory if it doesn't exist
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    # Download the file
+    response = requests.get(url)
+
+    # Check if the download was successful
+    if response.status_code == 200:
+        # Get the filename from the Content-Disposition header
+        content_disposition = response.headers.get('Content-Disposition')
+        if content_disposition:
+            filename = content_disposition.split(';')[1].strip().split('=')[1].strip("'\"")
+        else:
+            filename = os.path.basename(url)
+
+        # Save the file to the specified directory, always replacing existing files
+        with open(os.path.join(save_dir, filename), 'wb') as f:
+            f.write(response.content)
+
+        print("File downloaded successfully")
+        return os.path.join(save_dir, filename)
+    else:
+        print("Error downloading file:", response.status_code)
+        return None
 
 
-
+# TODO: Make it work for .gz extentions too.
 def unzip_file(zip_file_path, extract_to):
-    with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-        zip_ref.extractall(extract_to)
-    # TODO: Might need a safeguard, so it only removes IF it successfully extracted all.
+    zip_file_extension = get_file_extension(zip_file_path)[0]
+    print("FILE EXT: ", zip_file_extension)
+    if zip_file_extension == ".gz":
+        print("GZ")
+    else:
+        with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+            zip_ref.extractall(extract_to)
     os.remove(zip_file_path)
+    # TODO: Might need a safeguard, so it only removes IF it successfully extracted all.
 
 
 def find_archive_files(directory):

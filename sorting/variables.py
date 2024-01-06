@@ -29,5 +29,8 @@ RE_NUMBERS = "\d+"
 # Paths
 PATH_MOVIES = r"D:\Videos\Movies"
 PATH_SERIES = r"D:\Videos\Series"
+PATH_ALL_SUBTITLES = r"D:\Documents\GitHub\boring-automation\sorting\data" # TODO: Make this base on the python file somehow. Because it dosent work in other machines.
 
-
+# Names
+NAME_ALL_SUBTITLES = "subtitles_all.txt"
+NAME_ALL_SUBTITLE_ZIP = "subtitles_all.txt.gz"
