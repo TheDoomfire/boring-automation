@@ -1,13 +1,18 @@
 from playwright.sync_api import sync_playwright
 from mailtm import Email # temp mail
-import time
+import time # for delays
+import random
+import string
+import re
+from playwright.sync_api import Playwright, sync_playwright, expect
+
 
 #url = "https://accounts.palia.com/sign-up?referral=b27a6dd4-792f-4b3d-a562-7b77e4832d1b" # Albin
 #url = "https://accounts.palia.com/sign-up?referral=693562f2-1a38-424b-82dc-cf27fe5d4c9b" # Emma
 #url = "https://accounts.palia.com/sign-up?referral=e77ab715-345d-44a8-8f12-8d88242b15ce" # Bunny
 #url = "https://accounts.palia.com/sign-up?referral=d2bf373f-f4e1-428b-aeb2-8c789f21fc49" # Pays
 #url = "https://accounts.palia.com/sign-up?referral=abc65ea1-52f8-41b2-9e78-7779265ff1bf" # bunnies friend
-url = "https://accounts.palia.com/sign-up?referral=5a57d16c-890c-492e-9e23-1f92a7e5b2cd" # Kaioni
+#url = "https://accounts.palia.com/sign-up?referral=6c12dc58-f439-4291-9909-e4fef36cb237" # Kaioni
 #email = "email@email.com"
 #username = "username"
 #password = "password"
@@ -15,10 +20,7 @@ url = "https://accounts.palia.com/sign-up?referral=5a57d16c-890c-492e-9e23-1f92a
 # Refer a Friend (RaF) Palia
 
 
-from playwright.sync_api import Playwright, sync_playwright, expect
-
-
-def run(playwright: Playwright, email, username, password) -> None:
+def run(playwright: Playwright, email, username, password, url) -> None:
     browser = playwright.chromium.launch(headless=False) # True if u wanna see everything
     context = browser.new_context()
     page = context.new_page()
@@ -74,10 +76,75 @@ def temp_mail():
     return email
 
 
-with sync_playwright() as playwright:
-    for i in range(5):
-        email = temp_mail()
-        username = "jkasdhj432" + str(i)
-        password = '6n*"37Hnt3+q'
-        print(email)
-        run(playwright, email, username, password)
+def random_username(max_characters):
+    # Define the characters you want to include in the random string
+    characters = string.ascii_letters + string.digits
+    username = ''.join(random.choice(characters) for _ in range(max_characters))
+    return username
+
+def random_password(length_of_password):
+    special_characters = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '-', '=', '[', ']', '{', '}', '|', ';', ':', "'", '"', ',', '.', '<', '>', '?', '/']
+    lowercase_letters = string.ascii_lowercase
+    uppercase_letters = string.ascii_uppercase
+    # Ensure at least one special character, one lowercase letter, and one uppercase letter
+    password = [random.choice(special_characters),
+                random.choice(lowercase_letters),
+                random.choice(uppercase_letters)]
+     # Generate the rest of the password randomly
+    remaining_length = length_of_password - len(password)
+    all_characters = special_characters + list(lowercase_letters) + list(uppercase_letters) + list(string.digits)  # Include digits as well if needed
+
+    for _ in range(remaining_length):
+        password.append(random.choice(all_characters))
+
+    # Shuffle the characters to make it more random
+    random.shuffle(password)
+
+    # Convert the list to a string
+    password_str = ''.join(password)
+
+    return password_str
+
+
+def create_referral_code_url(input_strings):
+    pattern = re.compile(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
+    match = re.search(pattern, input_strings)
+    url = None
+
+    # Check if the pattern is found
+    if match:
+        # If found, get the matched string using group(0)
+        matched_pattern = match.group(0)
+        url = "https://accounts.palia.com/sign-up?referral=" + matched_pattern
+        
+        # Now you can use the matched pattern as needed
+        print("Pattern found:", matched_pattern)
+    else:
+        print("Pattern not found.")
+    return url
+
+
+def palia_raf(url):
+    raf_url = create_referral_code_url(url)
+    if raf_url is not None:
+        with sync_playwright() as playwright:
+            for i in range(5):
+                email = temp_mail()
+                username = random_username(20) #+ str(i)
+                password = random_password(15) #'6n*"37Hnt3+q'
+                print(email)
+                print(username)
+                print(password)
+                #run(playwright, email, username, password, url) # Need to add URL
+    else:
+        print("Wrong URL.")
+
+
+def main():
+    print("Main")
+    url = "https://accounts.palia.com/sign-up?referral=6c12dc58-f439-4291-9909-e4fef36cb237"
+    palia_raf(url)
+
+
+if __name__ == '__main__':
+    main()
