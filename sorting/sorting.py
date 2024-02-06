@@ -225,11 +225,14 @@ def sorter(folder_path):
                                     print(the_file_path)
                         if has_subtitle == None:
                             print("Folder HAD NO SUBTITLES :(")
-                            print("Find and downloading subtitles")
-                            # TODO: Spamming printing 16... donno what problem is.
+                            print("Find and downloading subtitles...")
+                            print("Filename: ", filename)
+  
+                            print("Trying to download the file.....")
                             subtitle.find_and_download_subtitle(filename, new_file_path)
-                            print("Downloaded subtitles")
-                            # TODO: Need to renname the subtitle file.
+                            print("Downloaded subtitles.")
+
+                            # TODO: Need to rename the subtitle file.
                             new_subtitles = small_functions.find_subtitle_files(new_file_path)
                             new_subtitle = new_subtitles[0]
 
@@ -296,8 +299,13 @@ def sorter(folder_path):
 
 
 def main():
+    # TODO: Add counter showing all movies that where moved.
+
     sorter(r"D:\Downloads\2 - Torrents")
-    # Spammed 16 forever???
+    #sorter(r"G:\Downloads")
+
+    # Problems
+
     #small_functions.create_folder(r"D:\Desktop Two\test_folder_lol")
 """     test_list = ["Rumble.Through.the.Dark.2023.1080p.AMZN.WEBRip.1400MB.DD5.1.x264-GalaxyRG",
                  "She.Came.to.Me.2023.720p.AMZN.WEBRip.800MB.x264-GalaxyRG[TGx]",

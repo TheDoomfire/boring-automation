@@ -2,13 +2,17 @@ import os
 from lib import small_functions
 #from sorting import format_file_name
 import sorting
-import variables
+import variables # name 'variables' is not defined ???
+from configparser import ConfigParser
+from datetime import date
 
 
 # TODO: It's very slow... Need to find out why.
 def subtitle_finder(file_name):
+    print("--- Running: subtitle_finder ---")
     # TODO: Make this work with any location like "\sorting\data\subtitles_all.txt"
     # Otherwise very hard to work in other computers.
+    #print("--- Running: subtitle_finder ---")
     subtitle_file = r'D:\Documents\GitHub\boring-automation\sorting\data\subtitles_all.txt' 
     result = []
     # TODO: Make it work with just file name
@@ -22,21 +26,30 @@ def subtitle_finder(file_name):
     #file_name_release_group = small_functions.split_by_this_and_remove_single_chars(file_name_release_group, ".")
     file_name_release_group = small_functions.split_by_these_and_remove_single_chars(file_name_release_group, [".", " "])
 
+    print("Movie File Name: ", movie_file_name)
+    print("Movie File Year: ", movie_file_year)
+    print("file_name_release_group: ", file_name_release_group)
+
     exact_name_match = None
     with open(subtitle_file, 'r', encoding='utf-8') as file:
+        #print("Opening file!")
         count = -1
         best_match = None
         best_id = 0
         for line in file:
+            #print("For every line.")
             # Skip the header line
             if not line.startswith('IDSubtitle'):
+                #print("not line.startswith('IDSubtitle')")
                 # Split the line using tab as a delimiter
                 data = line.strip().split('\t')
                 # Check if the line has enough elements
                 #print(len(data))
                 if len(data) > 3:
+                    #print("len(data) > 3")
                     # Extract the MovieName and LanguageName from the line
                     current_movie_name = small_functions.remove_special_characters(data[1].lower())
+                    #print(current_movie_name) # ERROR: NOT SHOWING???
                     id = data[0]
                     movie_year = data[2].lower()    
                     language_name = data[3].lower()
@@ -51,6 +64,7 @@ def subtitle_finder(file_name):
 
 
                     if movie_file_name == current_movie_name and language_name == 'english' and movie_file_year == movie_year:
+                        #print("English") # NOT SHOWING!!
                         #print("---------------------------")
                         #print(file_name)
                         movie_release_name = data[9].lower() # IndexError: list index out of range
@@ -84,20 +98,42 @@ def subtitle_finder(file_name):
 
 
 def find_and_download_subtitle(file_name, download_path):
+    print("Running: find_and_download_subtitle")
     # TODO: Downloads new file if movie_name not found?
     # https://dl.opensubtitles.org/addons/export/subtitles_all.txt.gz
     # or if subtitle_finder() returns nothing?
 
     # Looks for the subtitles
     found_subtitles = subtitle_finder(file_name)
+
     result = found_subtitles['result']
+    #print(found_subtitles) # taking forever
 
     # Checks if it found any result
     if not result:
-        print("Not found")
-        mass_download_opensubtitles_data(variables.PATH_ALL_SUBTITLES)
-        # subtitles_all.txt.gz
-        found_subtitles = subtitle_finder(file_name)
+        print("Not found sub")
+        # TODO: Limit the downloading?
+        # Store what date it downloaded last time, and check that time against today.
+        config = ConfigParser()
+        config.read("settings.ini")
+        config_data = config["DEFAULT"]
+        last_subtitle_update = config_data["last_subtitle_update"]
+        today = date.today()
+        formatted_date = today.strftime("%Y-%m-%d")
+        print(formatted_date)
+        print(last_subtitle_update)
+        if formatted_date == last_subtitle_update:
+            print("The dates are equal.")
+        else:
+            print("The dates are not equal.")
+
+        if last_subtitle_update != formatted_date:
+            print("Not Found sub Again!!!!")
+            path_all_subtitles = r"D:\Documents\GitHub\boring-automation\sorting\data" #variables.PATH_ALL_SUBTITLES
+            mass_download_opensubtitles_data(path_all_subtitles)
+            found_subtitles = subtitle_finder(file_name)
+            #small_functions.update_settings_file("DEFAULT", "last_subtitle_download", formatted_date) # Doesn't work??
+
     else:
         print("Found!")
 
@@ -105,25 +141,23 @@ def find_and_download_subtitle(file_name, download_path):
     print("Download URL: ", download_url)
 
     # Downloads it
-    #small_functions.download_file(download_url, download_path)
+    small_functions.download_file(download_url, download_path)
 
     # Finds the file
-"""     archived_files = small_functions.find_archive_files(download_path)
+    archived_files = small_functions.find_archive_files(download_path)
     archived_file = archived_files[0]
     archived_file_path = os.path.join(download_path, archived_file)
-    small_functions.unzip_file(archived_file_path, download_path) """
+    small_functions.unzip_file(archived_file_path, download_path)
 
 
 
 def mass_download_opensubtitles_data(download_path):
-    all_subtitles_download = "https://dl.opensubtitles.org/addons/export/subtitles_all.txt.gz"
-    print("hey")
+    print("--- Running: mass_download_opensubtitles_data ---")
     # Downloads it
-    small_functions.download_file_and_replace(all_subtitles_download, download_path)
-    
-    #txt_file_path = os.path.join(variables.PATH_ALL_SUBTITLES, variables.NAME_ALL_SUBTITLES)
+    small_functions.download_file_and_replace(variables.URL_ALL_SUBTITLES, download_path)
+
+    # Unzips it
     zip_file_path = os.path.join(variables.PATH_ALL_SUBTITLES, variables.NAME_ALL_SUBTITLE_ZIP)
-    print(zip_file_path)
     small_functions.unzip_file(zip_file_path, download_path)
 
 
@@ -136,13 +170,15 @@ def main():
     #movie_name = "Friday The 13Th"
     #movie_name = "Friday.the.13th.2009.1080p.BluRay.x264.YIFY"
     #test_movie_name = "loki.s02e05.1080p.web.h264-lazycunts"
-    download_path = r"D:\Desktop Two\test"
     test_movie_name = "Ricky.Gervais.Armageddon.2023.1080p.WEB.h264-ETHEL[TGx]" # Dosen't exist in file
+    test_movie_name = "Rebel.Moon.Part.One.A.Child.of.Fire.2023.1080p.WEBRip.x265-KONTRAST.mp4" # WONT WORK??? No subtitle.
     #test_movie_name = "Batman Begins (2005) 1080p BluRay x264 - 1.6GB - YIFY" # Does exist in file
 
     #find_and_download_subtitle(test_movie_name, "nada")'
-    # TODO: Need to unzip the file and replace the existing one.
-    mass_download_opensubtitles_data(variables.PATH_ALL_SUBTITLES)
+    download_path = variables.PATH_ALL_SUBTITLES
+    print("Download Path: ", download_path)
+    #mass_download_opensubtitles_data(download_path)
+    print("Done.")
 
 
 if __name__ == '__main__':

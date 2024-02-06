@@ -1,6 +1,9 @@
 import os
 import re
 
+# --- Description ---
+# Renames all subtitle files to their corresponding video file.
+
 
 # TODO: Import this instead. Its not renaming.
 def extract_season_episode(filename):
@@ -46,7 +49,7 @@ def rename_subtitles(folder_path):
 
 
 def main():
-    folder_p = r"D:\Videos\Series\Outrageous Fortune\Season 6"
+    folder_p = r"D:\Videos\Series\Ozark\Season 1"
     rename_subtitles(folder_p)
 
 

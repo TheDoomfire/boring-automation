@@ -34,3 +34,9 @@ PATH_ALL_SUBTITLES = r"D:\Documents\GitHub\boring-automation\sorting\data" # TOD
 # Names
 NAME_ALL_SUBTITLES = "subtitles_all.txt"
 NAME_ALL_SUBTITLE_ZIP = "subtitles_all.txt.gz"
+
+# Urls
+URL_ALL_SUBTITLES = "https://dl.opensubtitles.org/addons/export/subtitles_all.txt.gz"
+
+# Files
+FILE_SETTINGS = "settings.ini"

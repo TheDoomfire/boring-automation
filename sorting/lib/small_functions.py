@@ -3,9 +3,16 @@ import os
 import requests
 import zipfile
 import gzip
+import zlib
+import sys
+import tarfile
+import shutil
+from datetime import date
+from configparser import ConfigParser
 #import mediainfo
 
-import variables
+#import variables # No module named 'variables'
+#from .. import variables
 
 
 def split_by_first_re_pattern(input_string, patterns): # By first occuring re pattern.
@@ -76,7 +83,7 @@ def count_common_elements(list1, list2):
 
 
 def remove_special_characters(input_string):
-    special_characters = variables.LIST_ALL_SPECIAL_CHARACTERS
+    special_characters = ['.', ',', '!', ':', ';', '"', "'", '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=', '<', '>', '/', '?', '[', ']', '{', '}', '|', '\\'] #variables.LIST_ALL_SPECIAL_CHARACTERS # THE PROBLEM!!! Not showing
     cleaned_string = ''.join(char for char in input_string if char not in special_characters)
     return cleaned_string
 
@@ -140,15 +147,28 @@ def download_file_and_replace(url, save_dir):
 
 # TODO: Make it work for .gz extentions too.
 def unzip_file(zip_file_path, extract_to):
+    unzipping_successful = False
     zip_file_extension = get_file_extension(zip_file_path)[0]
-    print("FILE EXT: ", zip_file_extension)
-    if zip_file_extension == ".gz":
-        print("GZ")
+    if zip_file_extension == ".gz":  
+        file_name = (os.path.basename(zip_file_path)).rsplit('.',1)[0] #get file name for file within
+        file_name = os.path.join(extract_to, file_name)
+        try:
+            with gzip.open(zip_file_path,"rb") as f_in, open(file_name,"wb") as f_out:
+                shutil.copyfileobj(f_in, f_out)
+            unzipping_successful = True
+        except Exception as e:
+            print(f"Error during extraction: {e}")
     else:
-        with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-            zip_ref.extractall(extract_to)
-    os.remove(zip_file_path)
-    # TODO: Might need a safeguard, so it only removes IF it successfully extracted all.
+        try:
+            with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+                zip_ref.extractall(extract_to)
+            unzipping_successful = True
+        except Exception as e:
+            print(f"Error during extraction: {e}")
+
+
+    if unzipping_successful:
+        os.remove(zip_file_path)
 
 
 def find_archive_files(directory):
@@ -174,6 +194,18 @@ def find_subtitle_files(directory):
 def list_folders(directory):
     folders = [f for f in os.listdir(directory) if os.path.isdir(os.path.join(directory, f))]
     return folders
+    
+
+# TODO: Make it work with unlimited settings + values
+def update_settings_file(user, setting, value):
+    config = ConfigParser()
+
+    config[user] = {
+        setting: value,
+    }
+    file_name = "settings.ini" #variables.FILE_SETTINGS
+    with open(file_name, "w") as file:
+        config.write(file)
 
 
 
@@ -187,3 +219,14 @@ def list_folders(directory):
             return True
 
     return False """
+
+
+def main():
+    today = date.today()
+    formatted_date = today.strftime("%Y-%m-%d")
+    update_settings_file("DEFAULT", "last_subtitle_download", formatted_date)
+    print("Done.")
+
+
+if __name__ == '__main__':
+    main()
