@@ -38,10 +38,19 @@ def create_folder(folder_path):
         os.makedirs(folder_path)
 
 
+# OSError: [WinError 145] The directory is not empty:
 def delete_empty_folders(path):
     for root, _, files in os.walk(path):
         if not files:
             os.rmdir(root)
+
+
+def delete_empty_folders_recursive(path):
+    for root, dirs, _ in os.walk(path, topdown=False):
+        for folder in dirs:
+            folder_path = os.path.join(root, folder)
+            if not os.listdir(folder_path):  # Check if the folder is empty
+                os.rmdir(folder_path)
 
 
 def split_by_this(split_this, splitter):
@@ -145,10 +154,10 @@ def download_file_and_replace(url, save_dir):
         return None
 
 
-# TODO: Make it work for .gz extentions too.
 def unzip_file(zip_file_path, extract_to):
     unzipping_successful = False
     zip_file_extension = get_file_extension(zip_file_path)[0]
+    print(zip_file_extension)
     if zip_file_extension == ".gz":  
         file_name = (os.path.basename(zip_file_path)).rsplit('.',1)[0] #get file name for file within
         file_name = os.path.join(extract_to, file_name)
@@ -224,7 +233,12 @@ def update_settings_file(user, setting, value):
 def main():
     today = date.today()
     formatted_date = today.strftime("%Y-%m-%d")
-    update_settings_file("DEFAULT", "last_subtitle_download", formatted_date)
+    torrent_folder = r"D:\Downloads\2 - Torrents"
+    #update_settings_file("DEFAULT", "last_subtitle_download", formatted_date)
+    extract_to = r"D:\Videos\Movies\The Portrait (2023) [1080p]"
+    zip_file_path = r"D:\Videos\Movies\The Portrait (2023) [1080p]\the.portrait.(2023).eng.1cd.(9794532).zip"
+    #unzip_file(zip_file_path, extract_to)
+    delete_empty_folders_recursive(torrent_folder)
     print("Done.")
 
 

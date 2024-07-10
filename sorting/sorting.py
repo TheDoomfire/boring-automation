@@ -155,7 +155,7 @@ def sorter(folder_path):
         for root, _, files in os.walk(folder_path):
             for filename in files:
                 file_path = os.path.join(root, filename)
-        #for filename in os.listdir(folder_path):
+            #for filename in os.listdir(folder_path):
             #file_path = os.path.join(folder_path, filename)
             
                 # Check if the file is a regular file and has a video extension
@@ -300,8 +300,19 @@ def sorter(folder_path):
 
 def main():
     # TODO: Add counter showing all movies that where moved.
+    # It seems to only work with one movie at a time..
+    # Need to delete folder if the movie already exists.
+    # Remove: English Clean Korhc Imax Webrip from movie-name!!
+    # Won't unzip the subtitle zip file. Even when the small_function unzipper funtion works.
+    # Wont move all the files in the folder, such as .txt and images.
+    # Wont move series anymore.
 
-    sorter(r"D:\Downloads\2 - Torrents")
+    # It worked fine, I guess I must have changed something... Can't remember what.
+
+    #torrent_folder = r"D:\Downloads\2 - Torrents"
+    torrent_folder = r"G:\Downloads"
+
+    sorter(torrent_folder)
     #sorter(r"G:\Downloads")
 
     # Problems

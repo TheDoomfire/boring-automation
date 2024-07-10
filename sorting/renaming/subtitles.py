@@ -8,18 +8,18 @@ import re
 # TODO: Import this instead. Its not renaming.
 def extract_season_episode(filename):
     # Check for 's01e02' format
-    match = re.search(r's(\d+)e(\d+)', filename, re.IGNORECASE)
-    if match:
-        season = match.group(1)
-        episode = match.group(2)
-        return int(season), int(episode)
-
-    # Check for 'Season 1 Episode 02' format
-    match = re.search(r'season (\d+) episode (\d+)', filename, re.IGNORECASE)
-    if match:
-        season = match.group(1)
-        episode = match.group(2)
-        return int(season), int(episode)
+    patterns = [
+        r's(\d+)e(\d+)', # s01e01
+        r'season (\d+) episode (\d+)', # season 1 episode 1
+        r'(\d+)x(\d+)', # 01x01
+        ]
+    
+    for pattern in patterns:
+        match = re.search(pattern, filename, re.IGNORECASE)
+        if match:
+            season = match.group(1)
+            episode = match.group(2)
+            return int(season), int(episode)
 
     else:
         return None, None
@@ -49,7 +49,7 @@ def rename_subtitles(folder_path):
 
 
 def main():
-    folder_p = r"D:\Videos\Series\Ozark\Season 1"
+    folder_p = r"D:\Videos\Series\Game Of Thrones\Season 6"
     rename_subtitles(folder_p)
 
 

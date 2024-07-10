@@ -1,10 +1,12 @@
 import os
-from lib import small_functions
-#from sorting import format_file_name
-import sorting
-import variables # name 'variables' is not defined ???
 from configparser import ConfigParser
 from datetime import date
+#from sorting import format_file_name
+import time
+
+from lib import small_functions
+import sorting
+import variables # name 'variables' is not defined ???
 
 
 # TODO: It's very slow... Need to find out why.
@@ -147,7 +149,13 @@ def find_and_download_subtitle(file_name, download_path):
     archived_files = small_functions.find_archive_files(download_path)
     archived_file = archived_files[0]
     archived_file_path = os.path.join(download_path, archived_file)
-    small_functions.unzip_file(archived_file_path, download_path)
+    print("--- TRYING TO UNZIP ---")
+    print(archived_file_path)
+    print(download_path)
+    print("What is wrong???")
+    #time.sleep(1)
+    print("Trying to unzip subtitle file")
+    small_functions.unzip_file(archived_file_path, download_path) # Why wont work???
 
 
 
